@@ -3,6 +3,7 @@
 use thiagoalessio\TesseractOCR\Command;
 use thiagoalessio\TesseractOCR\Option;
 use thiagoalessio\TesseractOCR\FriendlyErrors;
+use thiagoalessio\TesseractOCR\DisabledFunctionException;
 
 class TesseractOCR
 {
@@ -18,6 +19,8 @@ class TesseractOCR
 	public function run($timeout = 0)
 	{
 		try {
+			$this->checkRequiredFunctions();
+
 			if ($this->outputFile !== null) {
 				FriendlyErrors::checkWritePermissions($this->outputFile);
 				$this->command->useFileAsOutput = true;
@@ -167,6 +170,27 @@ class TesseractOCR
 	private function getOptionClassName()
 	{
 		return __NAMESPACE__.'\\Option';
+	}
+
+	private function checkRequiredFunctions()
+	{
+		$requiredFunctions = ['exec', 'system', 'proc_open'];
+		$disabledFunctions = [];
+
+		foreach ($requiredFunctions as $function) {
+			if (!function_exists($function)) {
+				$disabledFunctions[] = $function;
+			}
+		}
+
+		if (!empty($disabledFunctions)) {
+			$message = sprintf(
+				"The following required PHP functions are disabled: %s. " .
+				"Please enable them in your php.ini configuration by removing them from the 'disable_functions' directive.",
+				implode(', ', $disabledFunctions)
+			);
+			throw new DisabledFunctionException($message);
+		}
 	}
 
 	private function cleanTempFiles()

@@ -1,5 +1,7 @@
 <?php namespace thiagoalessio\TesseractOCR;
 
+use thiagoalessio\TesseractOCR\DisabledFunctionException;
+
 class Command
 {
 	public $executable = 'tesseract';
@@ -17,6 +19,7 @@ class Command
 	{
 		$this->image = $image;
 		$this->outputFile = $outputFile;
+		$this->checkRequiredFunctions();
 	}
 
 	public function build() { return "$this"; }
@@ -70,6 +73,27 @@ class Command
 		array_shift($output);
 		sort($output);
 		return $output;
+	}
+
+	private function checkRequiredFunctions()
+	{
+		$requiredFunctions = ['exec', 'system'];
+		$disabledFunctions = [];
+
+		foreach ($requiredFunctions as $function) {
+			if (!function_exists($function)) {
+				$disabledFunctions[] = $function;
+			}
+		}
+
+		if (!empty($disabledFunctions)) {
+			$message = sprintf(
+				"The following required PHP functions are disabled: %s. " .
+				"Please enable them in your php.ini configuration by removing them from the 'disable_functions' directive.",
+				implode(', ', $disabledFunctions)
+			);
+			throw new DisabledFunctionException($message);
+		}
 	}
 
 	public static function escape($str)
