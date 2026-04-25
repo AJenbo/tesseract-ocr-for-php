@@ -3,7 +3,23 @@
 use thiagoalessio\TesseractOCR\Command;
 use thiagoalessio\TesseractOCR\Option;
 use thiagoalessio\TesseractOCR\FriendlyErrors;
+actOCR\FriendlyErrors;
 
+/**
+ * @method $this digits()
+ * @method $this hocr()
+ * @method $this pdf()
+ * @method $this quiet()
+ * @method $this tsv()
+ * @method $this txt()
+ * @method $this psm(int $psm)
+ * @method $this oem(int $oem)
+ * @method $this dpi(int $dpi)
+ * @method $this userWords(string $path)
+ * @method $this userPatterns(string $path)
+ * @method $this tessdataDir(string $path)
+ * @method $this lang(string ...$languages)
+ */
 class TesseractOCR
 {
 	public $command;
